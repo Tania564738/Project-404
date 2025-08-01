@@ -112,7 +112,7 @@ function generateMockWeather() {
     const hour12 = futureHour % 12 || 12;
     const ampm = futureHour >= 12 ? 'PM' : 'AM';
     const fakeTemp = (parseFloat(temp) + Math.random() * 0.5 - 0.2).toFixed(1);
-    return `<div class="hourly-item">${hour12}${ampm} — ${fakeTemp}°C, same vibes ✨</div>`;
+    return `<div class="hourly-item">${hour12}${ampm} — ${fakeTemp}°C</div>`;
   });
 
   document.getElementById("hourly").innerHTML = hourlies.join("");
