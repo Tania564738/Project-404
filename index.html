@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Indoor Weather Detection</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-container" id="appContainer">
+    <h1>Indoor Weather Detection</h1>
+    <div class="subtitle">404: outside weather not found</div>
+
+    <div class="weather-box">
+      <div class="chat-box">
+        <input type="text" id="question-input" placeholder="what's the vibe today? ✨" />
+        <button id="ask-btn">✨ check</button>
+        <div id="chat-messages" class="chat-messages"></div>
+      </div>
+
+      <!-- Weather info hidden initially -->
+      <div id="weather-info" class="weather-info" style="display: none;">
+        <div class="weather-grid">
+          <div class="weather-card main-temp">
+            <span id="temperature" class="temp-large"></span>
+            <span id="location" class="location-text"></span>
+          </div>
+          <div class="weather-card conditions-card">
+            <div id="conditions" class="conditions-text"></div>
+          </div>
+          <div class="weather-card icons-card">
+            <div class="icons-label">Current Mood</div>
+            <div id="icons" class="icons-display"></div>
+          </div>
+        </div>
+        <div class="weather-card hourly-card">
+          <div class="section-title">Hourly Forecast</div>
+          <div id="hourly" class="hourly"></div>
+        </div>
+        <div class="weather-card alert-card">
+          <div id="alert" class="alert"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
