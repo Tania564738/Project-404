@@ -2,16 +2,330 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Indoor Weather Detector</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moodcast</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=1920&q=80') center center/cover no-repeat;
+      opacity: 0.15;
+      z-index: -2;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%);
+      z-index: -1;
+    }
+
+    .container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 700;
+      color: #ffffff;
+      text-align: center;
+      margin-bottom: 3rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+      animation: titleFloat 6s ease-in-out infinite;
+    }
+
+    @keyframes titleFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .main-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 24px;
+      padding: 3rem;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
+                  0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: cardSlideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes cardSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .main-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.3),
+                  0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+    }
+
+    .detect-btn {
+      width: 100%;
+      padding: 1.25rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      cursor: pointer;
+      margin-bottom: 2rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 25px -8px rgba(102, 126, 234, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .detect-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .detect-btn:hover::before {
+      left: 100%;
+    }
+
+    .detect-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px -8px rgba(102, 126, 234, 0.6);
+    }
+
+    .detect-btn:active {
+      transform: translateY(0);
+    }
+
+    .video-container {
+      width: 100%;
+      height: 280px;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .video-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .video-placeholder {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    .result-section {
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .result-section.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .expression-result {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    .weather-output {
+      background: rgba(102, 126, 234, 0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      color: #f0f9ff;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid #ffffff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .floating-elements {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .floating-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      animation: float 8s infinite ease-in-out;
+    }
+
+    .floating-circle:nth-child(1) {
+      width: 80px;
+      height: 80px;
+      top: 20%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .floating-circle:nth-child(2) {
+      width: 60px;
+      height: 60px;
+      top: 60%;
+      right: 10%;
+      animation-delay: 2s;
+    }
+
+    .floating-circle:nth-child(3) {
+      width: 100px;
+      height: 100px;
+      bottom: 20%;
+      left: 20%;
+      animation-delay: 4s;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+      33% {
+        transform: translateY(-20px) rotate(120deg);
+      }
+      66% {
+        transform: translateY(10px) rotate(240deg);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      .main-card {
+        padding: 2rem;
+      }
+      
+      .title {
+        margin-bottom: 2rem;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Indoor Weather Detector</h1>
-  <button id="detect-face-btn">Detect Mood</button>
-  <div id="video-container"></div>
-  <div id="expression-result"></div>
-  <div id="weather-output"></div>
+  <div class="floating-elements">
+    <div class="floating-circle"></div>
+    <div class="floating-circle"></div>
+    <div class="floating-circle"></div>
+  </div>
+
+  <div class="container">
+    <h1 class="title">Moodcast</h1>
+    
+    <div class="main-card">
+      <button id="detect-face-btn" class="detect-btn">
+        🎭 Detect My Mood
+      </button>
+      
+      <div id="video-container" class="video-container">
+        <div class="video-placeholder">Camera feed will appear here</div>
+      </div>
+      
+      <div id="result-section" class="result-section">
+        <div id="expression-result" class="expression-result" style="display: none;">
+          <!-- Mood results will appear here -->
+        </div>
+        
+        <div id="weather-output" class="weather-output" style="display: none;">
+          <!-- Weather recommendations will appear here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.21.0/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
   <script src="script.js"></script>
+  
+  
 </body>
 </html>
