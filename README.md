@@ -14,7 +14,7 @@
 - 
 
 ### Project Description
-Moodcast is your emotionally intelligent weather buddy! Using face detection and emotion recognition from your webcam, Moodcast changes the virtual “weather” of your screen based on how you feel—because sometimes it just needs to rain when you're sad (or show rainbows when you're joyful).
+Why check the weather when your face already knows how you're feeling? Our site uses facial detection to forecast your indoor vibes — complete with snark, mood-based weather, and zero actual data
 
 ### The Problem (that doesn't exist)
 Sometimes, you're feeling sad, and the weather outside is sunny and mocking you. Other times, you're euphoric but your screen background is stuck in a dark mode rut. What if your digital environment matched your emotional environment?
